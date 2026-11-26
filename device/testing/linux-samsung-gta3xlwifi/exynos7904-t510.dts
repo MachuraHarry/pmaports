@@ -23,15 +23,16 @@
 		
 		bootargs = "pmos.nosplash exynos7885.dispaud=1 cma=128M";
 
-		/* The bootloader loads the boot.img ramdisk at 0x89000000, and
-		 * uniLoader copies the kernel to 0x90000000. The archive's real
-		 * size is not passed on, so give the initramfs everything up to
-		 * 0x8c000000 (48 MiB): a shorter window truncates it, and /init
-		 * then fails on a missing file. Bytes after the archive only log
-		 * "Initramfs unpacking failed".
+		/* uniLoader-t510's gta3xl_defconfig sets CONFIG_RAMDISK_ENTRY to
+		 * 0x84000000 (not the 0x89000000 used by the old generic
+		 * uniLoader T510 config this comment used to describe) -- this
+		 * must match exactly, since that's where the real initramfs
+		 * actually gets copied to before Linux starts. With the old,
+		 * mismatched address the kernel silently never found an
+		 * initramfs at all (no error, no root fs, no boot).
 		 */
-		linux,initrd-start = <0x89000000>;
-		linux,initrd-end = <0x8c000000>;
+		linux,initrd-start = <0x84000000>;
+		linux,initrd-end = <0x86000000>;
 
 		stdout-path = "fb0";
 
